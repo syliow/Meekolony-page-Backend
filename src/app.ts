@@ -39,9 +39,12 @@ app.get("/nft/listings", async (req: Request, res: Response) => {
 app.get("/nft/sales", async (req: Request, res: Response) => {
   try {
     const { data } = await axios.get(
-      "https://api-mainnet.magiceden.dev//v2/collections/meekolony/activities?offset=0&limit=100"
+      "https://api-mainnet.magiceden.dev//v2/collections/meekolony/activities?offset=0&limit=250"
     );
-    res.send(data);
+    const filtered = data.filter((obj: { type: string }) => {
+      return obj.type === "buyNow";
+    });
+    res.send(filtered);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log("error message: ", error.message);

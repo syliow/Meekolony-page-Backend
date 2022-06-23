@@ -21,9 +21,7 @@ app.use(cors());
 app.get("/nft/listings", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { startIndex } = req.query;
-        const { data } = yield axios_1.default.get(`https://api-mainnet.magiceden.dev/v2/collections/meekolony/listings?offset=${startIndex}&limit=20`
-        // `https://api-mainnet.magiceden.dev/v2/collections/meekolony/listings?offset=0&limit=20`
-        );
+        const { data } = yield axios_1.default.get(`https://api-mainnet.magiceden.dev/v2/collections/meekolony/listings?offset=${startIndex}&limit=20`);
         res.send(data);
     }
     catch (error) {
@@ -39,8 +37,11 @@ app.get("/nft/listings", (req, res) => __awaiter(void 0, void 0, void 0, functio
 }));
 app.get("/nft/sales", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { data } = yield axios_1.default.get("https://api-mainnet.magiceden.dev//v2/collections/meekolony/activities?offset=0&limit=100");
-        res.send(data);
+        const { data } = yield axios_1.default.get("https://api-mainnet.magiceden.dev//v2/collections/meekolony/activities?offset=0&limit=250");
+        const filtered = data.filter((obj) => {
+            return obj.type === "buyNow";
+        });
+        res.send(filtered);
     }
     catch (error) {
         if (axios_1.default.isAxiosError(error)) {
