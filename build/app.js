@@ -14,7 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const axios_1 = __importDefault(require("axios"));
-var cors = require("cors");
+const js_1 = require("@metaplex-foundation/js");
+const web3_js_1 = require("@solana/web3.js");
+const connection = new web3_js_1.Connection((0, web3_js_1.clusterApiUrl)("mainnet-beta"));
+const metaplex = new js_1.Metaplex(connection);
+const tokenPublicKey = "EAopTg4TPxLADNmNtzNoXyp9Z1Vo3xGYnwynrir19Sjc";
+const cors = require("cors");
 const app = (0, express_1.default)();
 const port = 5000;
 app.use(cors());
@@ -23,6 +28,7 @@ app.get("/nft/listings", (req, res) => __awaiter(void 0, void 0, void 0, functio
         const { startIndex } = req.query;
         const { data } = yield axios_1.default.get(`https://api-mainnet.magiceden.dev/v2/collections/meekolony/listings?offset=${startIndex}&limit=20`);
         res.send(data);
+        // const nftmetadata = await metaplex.nfts().findAllByOwner(metaplex.identity().publicKey);
     }
     catch (error) {
         if (axios_1.default.isAxiosError(error)) {
@@ -37,7 +43,7 @@ app.get("/nft/listings", (req, res) => __awaiter(void 0, void 0, void 0, functio
 }));
 app.get("/nft/sales", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { data } = yield axios_1.default.get("https://api-mainnet.magiceden.dev//v2/collections/meekolony/activities?offset=0&limit=250");
+        const { data } = yield axios_1.default.get("https://api-mainnet.magiceden.dev//v2/collections/meekolony/activities?offset=0&limit=350");
         const filtered = data.filter((obj) => {
             return obj.type === "buyNow";
         });
@@ -54,9 +60,28 @@ app.get("/nft/sales", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
     }
 }));
-// getUsers();
-// getListings();
-// getSales();
+app.get("/nft/getData", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // const publicKey = "EAopTg4TPxLADNmNtzNoXyp9Z1Vo3xGYnwynrir19Sjc";
+        // const nftmetadata = await metaplex.nfts().findAllByOwner(metaplex.identity().publicKey);
+        const mintAddress = req.query.mintAddress;
+        const mint = new web3_js_1.PublicKey(mintAddress);
+        const nft = yield metaplex.nfts().findByMint(mint);
+        console.log(mint, ' mintt');
+        console.log(nft, ' nft');
+        res.send(nft);
+    }
+    catch (error) {
+        if (axios_1.default.isAxiosError(error)) {
+            console.log("error message: ", error.message);
+            return error.message;
+        }
+        else {
+            console.log("unexpected error: ", error);
+            return "An unexpected error occurred";
+        }
+    }
+}));
 app.get("/", (req, res) => {
     res.send("Helloooo 123");
 });
