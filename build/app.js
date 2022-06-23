@@ -18,7 +18,6 @@ const js_1 = require("@metaplex-foundation/js");
 const web3_js_1 = require("@solana/web3.js");
 const connection = new web3_js_1.Connection((0, web3_js_1.clusterApiUrl)("mainnet-beta"));
 const metaplex = new js_1.Metaplex(connection);
-const tokenPublicKey = "EAopTg4TPxLADNmNtzNoXyp9Z1Vo3xGYnwynrir19Sjc";
 const cors = require("cors");
 const app = (0, express_1.default)();
 const port = 5000;
@@ -28,16 +27,11 @@ app.get("/nft/listings", (req, res) => __awaiter(void 0, void 0, void 0, functio
         const { startIndex } = req.query;
         const { data } = yield axios_1.default.get(`https://api-mainnet.magiceden.dev/v2/collections/meekolony/listings?offset=${startIndex}&limit=20`);
         res.send(data);
-        // const nftmetadata = await metaplex.nfts().findAllByOwner(metaplex.identity().publicKey);
     }
     catch (error) {
         if (axios_1.default.isAxiosError(error)) {
             console.log("error message: ", error.message);
             return error.message;
-        }
-        else {
-            console.log("unexpected error: ", error);
-            return "An unexpected error occurred";
         }
     }
 }));
@@ -54,21 +48,13 @@ app.get("/nft/sales", (req, res) => __awaiter(void 0, void 0, void 0, function* 
             console.log("error message: ", error.message);
             return error.message;
         }
-        else {
-            console.log("unexpected error: ", error);
-            return "An unexpected error occurred";
-        }
     }
 }));
 app.get("/nft/getData", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // const publicKey = "EAopTg4TPxLADNmNtzNoXyp9Z1Vo3xGYnwynrir19Sjc";
-        // const nftmetadata = await metaplex.nfts().findAllByOwner(metaplex.identity().publicKey);
         const mintAddress = req.query.mintAddress;
         const mint = new web3_js_1.PublicKey(mintAddress);
         const nft = yield metaplex.nfts().findByMint(mint);
-        console.log(mint, ' mintt');
-        console.log(nft, ' nft');
         res.send(nft);
     }
     catch (error) {
@@ -76,15 +62,21 @@ app.get("/nft/getData", (req, res) => __awaiter(void 0, void 0, void 0, function
             console.log("error message: ", error.message);
             return error.message;
         }
-        else {
-            console.log("unexpected error: ", error);
-            return "An unexpected error occurred";
+    }
+}));
+app.get("/nft/checkAddress", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userAddress = req.query.userAddress;
+        const mint = new web3_js_1.PublicKey(userAddress);
+        const myNfts = yield metaplex.nfts().findAllByOwner(metaplex.identity().publicKey);
+    }
+    catch (error) {
+        if (axios_1.default.isAxiosError(error)) {
+            console.log("error message: ", error.message);
+            return error.message;
         }
     }
 }));
-app.get("/", (req, res) => {
-    res.send("Helloooo 123");
-});
 app.get("/nft", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { data } = yield axios_1.default.get("https://api-mainnet.magiceden.dev/v2/collections/meekolony/stats");
@@ -100,9 +92,6 @@ app.get("/nft", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return "An unexpected error occurred";
         }
     }
-}));
-app.get("/hello", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send("hello");
 }));
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
