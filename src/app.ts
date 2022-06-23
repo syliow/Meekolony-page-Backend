@@ -20,8 +20,9 @@ type GetUsersResponse = {
 
 app.get("/nft/listings", async (req: Request, res: Response) => {
   try {
+    const { startIndex } = req.query;
     const { data } = await axios.get(
-      "https://api-mainnet.magiceden.dev/v2/collections/meekolony/listings?offset=0&limit=20"
+      `https://api-mainnet.magiceden.dev/v2/collections/meekolony/listings?offset=${startIndex}&limit=20`
     );
     res.send(data);
   } catch (error) {

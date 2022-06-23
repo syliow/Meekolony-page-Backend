@@ -20,7 +20,10 @@ const port = 5000;
 app.use(cors());
 app.get("/nft/listings", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { data } = yield axios_1.default.get("https://api-mainnet.magiceden.dev/v2/collections/meekolony/listings?offset=0&limit=20");
+        const { startIndex } = req.query;
+        const { data } = yield axios_1.default.get(`https://api-mainnet.magiceden.dev/v2/collections/meekolony/listings?offset=${startIndex}&limit=20`
+        // `https://api-mainnet.magiceden.dev/v2/collections/meekolony/listings?offset=0&limit=20`
+        );
         res.send(data);
     }
     catch (error) {
