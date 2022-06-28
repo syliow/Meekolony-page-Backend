@@ -67,8 +67,14 @@ app.get("/nft/getData", (req, res) => __awaiter(void 0, void 0, void 0, function
 app.get("/nft/checkAddress", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userAddress = req.query.userAddress;
-        const mint = new web3_js_1.PublicKey(userAddress);
-        const myNfts = yield metaplex.nfts().findAllByOwner(metaplex.identity().publicKey);
+        const owner = new web3_js_1.PublicKey(userAddress);
+        const myNfts = yield metaplex.nfts().findAllByOwner(owner);
+        const filteredResult = myNfts.filter((obj) => {
+            return obj.symbol === "MKLN";
+        });
+        if (filteredResult) {
+            res.send(filteredResult);
+        }
     }
     catch (error) {
         if (axios_1.default.isAxiosError(error)) {
@@ -86,10 +92,6 @@ app.get("/nft", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (axios_1.default.isAxiosError(error)) {
             console.log("error message: ", error.message);
             return error.message;
-        }
-        else {
-            console.log("unexpected error: ", error);
-            return "An unexpected error occurred";
         }
     }
 }));

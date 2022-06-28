@@ -13,7 +13,7 @@ app.use(cors());
 type NFT = {
   symbol: string;
   floorPrice: number;
-  listedCount: string;
+  listedCount: number;
   avgPrice24hr: number;
   volumeAll: number;
 };
@@ -72,10 +72,16 @@ app.get("/nft/getData", async (req: Request, res: Response) => {
 app.get("/nft/checkAddress", async (req: Request, res: Response) => {
   try {
     const userAddress = req.query.userAddress as string;
-    const mint = new PublicKey(userAddress);
-    const myNfts = await metaplex
-      .nfts()
-      .findAllByOwner(metaplex.identity().publicKey);
+    const owner = new PublicKey(userAddress);
+    const myNfts = await metaplex.nfts().findAllByOwner(owner);
+
+    const filteredResult = myNfts.filter((obj: { symbol: string }) => {
+      return obj.symbol === "MKLN";
+    });
+
+    if (filteredResult) {
+      res.send(filteredResult);
+    }
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.log("error message: ", error.message);
